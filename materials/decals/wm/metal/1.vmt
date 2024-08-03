@@ -1,0 +1,8 @@
+"DecalModulate"
+{
+	"$translucent" 1
+	"$basetexture" "decals/wm/metal/1"
+	"$decal" 1
+	"$decalsecondpass" 1 
+	"$decalscale" 0.05
+}
