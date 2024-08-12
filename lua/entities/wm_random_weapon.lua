@@ -1,6 +1,6 @@
 AddCSLuaFile()
 
-ENT.PrintName = "Spawn Random WM"
+ENT.PrintName = "#wm.entity.randomweapon"
 ENT.Author = "Woowz11"
 ENT.Category = "Fun + Games"
 ENT.Type = "point"

@@ -1,8 +1,8 @@
 "DecalModulate"
 {
 	"$translucent" 1
-	"$basetexture" "decals/wm/concrete/1"
+	"$basetexture" "decals/wm/concrete/5"
 	"$decal" 1
 	"$decalsecondpass" 1 
-	"$decalscale" 0.1
-} 
+	"$decalscale" 0.05
+}

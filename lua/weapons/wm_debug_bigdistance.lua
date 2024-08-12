@@ -1,6 +1,6 @@
 AddCSLuaFile()
 local Info = {
-	Name = "Big Distance",
+	Name = "#wm.weapon.bigdistance",
 	VModel = "models/weapons/c_crowbar.mdl",
 	VModelPos = Vector(-1,0,0),
 	FOV = 70,
@@ -27,6 +27,6 @@ local Info = {
 	WBlockRot = Angle(-45,-45,0),
 	BlockWait = 1,
 	BlockPower = 0.25,
-	SwingSounds = {"weapons/melee/swing_light_blunt_01.wav","weapons/melee/swing_light_blunt_02.wav","weapons/melee/swing_light_blunt_03.wav"},
+	SwingSounds = WMLib.SoundsSwing["Light"],
 }
 WMLib.CreateMelee(SWEP,Info,"vanilla")

@@ -2,13 +2,22 @@ AddCSLuaFile()
 
 local GetConVar, Color, util, math, hook, CLIENT, SERVER, table, IsValid, pairs, ragmod, timerSimple, hookAdd, debugoverlay, ColorAlpha, hookRun = GetConVar, Color, util, math, hook, CLIENT, SERVER, table, IsValid, pairs, ragmod, timer.Simple, hook.Add, debugoverlay, ColorAlpha, hook.Run
 
-function p(text)
-	if SERVER then print(text) end
-end
-
 function e(text)
 	if SERVER then
 		print("[WM ERROR] "..text)
+	end
+end
+
+function IfNil(val,key,def)
+	if val == nil then return def end
+	if key == nil then
+		if val == nil then
+			return def
+		else
+			return val
+		end
+	else
+		if val[key] == nil then return def else return val[key] end
 	end
 end
 
@@ -64,7 +73,7 @@ end)
 
 WMLib = {}
 
-local version = "0.0.4 Alpha"
+local version = "0.0.5 Alpha"
 local wiki = "https://woowz11.github.io/woowzsite/woowzmelee_wiki.html"
 
 WMLib.Mods = {}
@@ -76,7 +85,6 @@ WMLib.CreateMod = function(modid, info)
 					e("There is not enough information (Name) in the modification! E8")
 				else
 					WMLib.Mods[modid] = info
-					p("Modification ["..modid.."] created!")
 				end
 			else
 				e("Mod information is not table! E7")
@@ -88,7 +96,7 @@ WMLib.CreateMod = function(modid, info)
 		e("Modification id ["..tostring(modid).."] (type:"..type(modid)..") is not a string! E5")
 	end
 end
-WMLib.CreateMod("vanilla",{Name = "Vanilla",Author = "Woowz11"})
+WMLib.CreateMod("vanilla",{Name = "#wm.mod.vanilla",Author = "Woowz11"})
 
 local shocksounds = {"ambient/energy/zap1.wav","ambient/energy/zap2.wav","ambient/energy/zap3.wav","ambient/energy/zap5.wav","ambient/energy/zap6.wav","ambient/energy/zap7.wav","ambient/energy/zap8.wav","ambient/energy/zap9.wav","ambient/energy/weld1.wav","ambient/energy/weld2.wav","ambient/energy/spark1.wav","ambient/energy/spark2.wav","ambient/energy/spark3.wav","ambient/energy/spark4.wav","ambient/energy/spark5.wav","ambient/energy/spark6.wav","weapons/stunstick/spark1.wav","weapons/stunstick/spark2.wav","weapons/stunstick/spark3.wav"}
 WMLib.ShockEntity = function(entity,power)
@@ -156,10 +164,43 @@ WMLib.GetInfo = function(w)
 	if WMLib.ThatWMWeapon(w) then
 		return w.WMInfo
 	else
-		e("The weapon ("..w:GetClass()..") is not a Woowz Melee weapon, it is impossible to get Info of this weapon! E9")
+		if IsValid(w) then
+			e("The weapon ("..w:GetClass()..") is not a Woowz Melee weapon, it is impossible to get Info of this weapon! E9")
+		else
+			e("The weapon (nil) is not a Woowz Melee weapon, it is impossible to get Info of this weapon! E9")
+		end
 		return nil
 	end
 end
+
+WMLib.CreateParticle = function(particleinfo)
+	net.Start("wm_CreateParticle")
+	net.WriteTable({
+		["Position" ] = IfNil(particleinfo,"Position" ,Vector(0,0,0)),
+		["Texture"  ] = IfNil(particleinfo,"Texture"  ,"effects/ar2_altfire1"),
+		["Count"    ] = IfNil(particleinfo,"Count"    ,1),
+		["Random"   ] = IfNil(particleinfo,"Random"   ,0),
+		["Lifetime" ] = IfNil(particleinfo,"Lifetime" ,5),
+		["Color"    ] = IfNil(particleinfo,"Color"    ,Color(255,255,255)),
+		["EndAlpha" ] = IfNil(particleinfo,"EndAlpha" ,255),
+		["UseLight" ] = IfNil(particleinfo,"UseLight" ,false),
+		["StartSize"] = IfNil(particleinfo,"StartSize",10),
+		["EndSize"  ] = IfNil(particleinfo,"EndSize"  ,0),
+		["Gravity"  ] = IfNil(particleinfo,"Gravity"  ,Vector(0,0,0)),
+		["Velocity" ] = IfNil(particleinfo,"Velocity" ,Vector(0,0,0)),
+		["Roll"     ] = IfNil(particleinfo,"Roll"     ,0),
+		["Bounce"   ] = IfNil(particleinfo,"Bounce"   ,0),
+		["Collide"  ] = IfNil(particleinfo,"Collide"  ,false),
+	})
+	net.Send(player.GetAll())
+end
+
+WMLib.SoundsSwing = {
+	["Light"]      = {"wm/swing/light1.wav","wm/swing/light2.wav","wm/swing/light3.wav"},
+	["LightSharp"] = {"wm/swing/light1sharp.wav","wm/swing/light2sharp.wav","wm/swing/light3sharp.wav"},
+	["Heavy"]      = {"wm/swing/heavy1.wav","wm/swing/heavy2.wav","wm/swing/heavy3.wav"},
+	["HeavySharp"] = {"wm/swing/heavy1sharp.wav","wm/swing/heavy2sharp.wav","wm/swing/heavy3sharp.wav"},
+}
 
 WMLib.Version = version
 WMLib.Wiki = wiki

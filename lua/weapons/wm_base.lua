@@ -1,11 +1,11 @@
 AddCSLuaFile()
-SWEP.PrintName = "WoowzMelee Base"
+SWEP.PrintName = "#wm.weapon.base"
 SWEP.Contact = ""
 SWEP.Purpose = ""
 SWEP.Instructions = ""
 SWEP.Base = "weapon_base"
 SWEP.Slot = 0
-SWEP.Weight = 1
+SWEP.Weight = 6
 SWEP.ViewModelFOV = 80
 SWEP.DrawWeaponInfoBox = true
 SWEP.AdminSpawnable = true

@@ -11,15 +11,18 @@ local Convars = {
 	["takeweapons"] = {1,"Can pickup weapons? 0 - Disabled, 1 - Enabled"},
 	["npccanuse"] = {1,"NPC can use weapons? 0 - Disabled, 1 - Enabled"},
 	["npcweapons"] = {1,"Add weapons to NPC weapon selector? 0 - Disabled, 1 - Enabled"},
+	["slot"] = {0,"Weapons slot"},
 	
 	["canblock"] = {1,"Block enabled? 0 - Disabled, 1 - Enabled"},
-	["blockscale"] = {1,"Block power damage scale"},
+	["blockscale"] = {1,"Damage with block scale"},
+	["blockspeed"] = {1,"Block speed scale"},
 	["legsblock"] = {0,"Block work for legs? 0 - Disabled, 1 - Enabled"},
 	["distancescale"] = {1,"Weapon distance scale"},
 	["attackwaitscale"] = {1,"Attack wait scale"},
 	["kickscale"] = {1,"Kick power scale"},
 	["inertiascale"] = {1,"Inertia scale"},
 	["attackunderwater"] = {0,"Can attack underwater? 0 - Disabled, 1 - Enabled"},
+	["entityprior"] = {1,"Hits on entity is priority? 0 - Disabled, 1 - Enabled"},
 	
 	["damagescale"] = {1,"NPC damage scale"},
 	["damagescale_player"] = {1,"Player damage scale"},
@@ -28,6 +31,7 @@ local Convars = {
 	["ragdollize"] = {1,"Ragdoll when take damage? 0 - Disabled, 1 - Enabled"},
 	["ragdollize_needdamage"] = {35,"How much damage would it take to ragdoll"},
 	["interimhittomain"] = {0,"Makes intermediate hits to main hits? 0 - Disabled, 1 - Enabled"},
+	["hitcenter"] = {0,"Hit center? 0 - Disabled, 1 - Enabled"},
 	
 	["showhits"] = {0,"Show player & NPC hits? 0 - Disabled, 1 - Enabled"},
 	
@@ -40,16 +44,20 @@ local Convars = {
 	["crosshair"] = {0,"Enable crosshair? 0 - Disabled, 1 - Enabled"},
 	["customfunctions"] = {1,"Enable custom functions? 0 - Disabled, 1 - Enabled"},
 	["hitsquality"] = {0,"Hits quality"},
+	["bobbingscale"] = {1,"Bobbing scale"},
+	["swayscale"] = {1,"Sway scale"},
+	["idlescale"] = {1,"Idle scale"},
 	
 	["funny_burn"] = {0,"Ignite hit objects? 0 - Disabled, 1 - Enabled"},
 	["funny_shock"] = {0,"Shock hit objects? 0 - Disabled, 1 - Enabled"},
 	["funny_randomnames"] = {0,"Makes random name's? 0 - Disabled, 1 - Enabled"},
 	["funny_randomdecals"] = {0,"Random hit decals? 0 - Disabled, 1 - Enabled"},
 	
-	["debug_livetime"] = {10,"Debug overlay lifetime"},
-	["debug_weapons"] = {0,"Load debug weapons? 0 - Disabled, 1 - Enabled"},
-	["debug_showhit"] = {0,"Mark hit points? 0 - Disabled, 1 - Enabled"},
-	["debug_showdamage"] = {0,"Mark damage? 0 - Disabled, 1 - Enabled"},
+	["debug_livetime"   ] = {10,"Debug overlay lifetime"},
+	["debug_weapons"    ] = {0,"Load debug weapons? 0 - Disabled, 1 - Enabled"},
+	["debug_showhit"    ] = {0,"Mark hit points? 0 - Disabled, 1 - Enabled"},
+	["debug_showfailhit"] = {0,"Mark fails hit points? 0 - Disabled, 1 - Enabled"},
+	["debug_showdamage" ] = {0,"Mark damage? 0 - Disabled, 1 - Enabled"},
 }
 
 if not ConVarExists("wm_enabled") then
@@ -79,68 +87,84 @@ if CLIENT then
 				extended	= true
 			} )
 		
-			cpanel:Help("Mod version "..WMLib.Version)
+			cpanel:Help(language.GetPhrase("#wm.cpanel.modversion").." "..WMLib.Version)
 			local urltext = vgui.Create("DLabelURL")
 			urltext:SetColor( Color( 170, 170, 255 ) ) 
-			urltext:SetText("Open Wiki") 
+			urltext:SetText("#wm.cpanel.openwiki") 
 			urltext:SetURL(WMLib.Wiki)
 			cpanel:AddItem(urltext)
 			
-			local warn = cpanel:Help("This base is in alpha version, for now it is better not to create modifications on it. Mod wiki is under development")
-			warn:SetColor(Color(255,0,0))
-			cpanel:Help("Mod Base"):SetFont("DermaLarge_WM")
-			cpanel:CheckBox("Load weapons? (Need restart)", "wm_enabled")
-			cpanel:CheckBox("Place categorys on top? (Need restart)", "wm_categorytop")
-			cpanel:CheckBox("Only admin can spawn? (Need restart)", "wm_onlyadmin")
-			cpanel:CheckBox("Load funny weapons? (Need restart)", "wm_funny_weapons")
-			cpanel:CheckBox("Enable extended weapons descriptions? (Need restart)", "wm_extendeddesc")
-			cpanel:CheckBox("Can pickup weapons?", "wm_takeweapons")
-			cpanel:CheckBox("NPC can use weapons?", "wm_npccanuse")
-			cpanel:CheckBox("Add weapons to NPC weapon selector? (Need restart)", "wm_npcweapons")
-			cpanel:Help("Melee"):SetFont("DermaLarge_WM")
-			cpanel:CheckBox("Enable block?", "wm_canblock")
-			cpanel:NumSlider("Block power damage scale","wm_blockscale",0,1)
-			cpanel:CheckBox("Block work for legs?", "wm_legsblock")
-			cpanel:NumSlider("Weapon distance scale","wm_distancescale",0,10,1)
-			cpanel:NumSlider("Attack wait scale","wm_attackwaitscale",0,10,1)
-			cpanel:NumSlider("Kick scale","wm_kickscale",0,10,1)
-			cpanel:NumSlider("Inertia scale","wm_inertiascale",0,10,1)
-			cpanel:CheckBox("Can attack underwater?", "wm_attackunderwater")
-			cpanel:Help("Damage"):SetFont("DermaLarge_WM")
-			cpanel:NumSlider("NPC damage scale","wm_damagescale",0,10,1)
-			cpanel:NumSlider("Player damage scale","wm_damagescale_player",0,10,1)
-			cpanel:NumSlider("Other entity damage scale","wm_damagescale_prop",0,10,1)
-			cpanel:NumSlider("Headshot damage scale","wm_damagescale_headshot",0,10,1)
-			if ragmod then
-				cpanel:CheckBox("Ragdollize then take damage?", "wm_ragdollize")
-				cpanel:NumSlider("How much damage would it take to ragdoll","wm_ragdollize_needdamage",0,100,0)
+			function cp(cvar,i,i2,i3)
+				if i==nil then
+					cpanel:CheckBox(language.GetPhrase("#wm.cpanel.d."..cvar), "wm_"..cvar)
+				else
+					cpanel:NumSlider(language.GetPhrase("#wm.cpanel.d."..cvar), "wm_"..cvar,i,i2,i3)
+				end
 			end
-			cpanel:CheckBox("Makes intermediate hits to main hits?", "wm_interimhittomain")
-			cpanel:Help("GUI"):SetFont("DermaLarge_WM")
-			cpanel:CheckBox("Show player & NPC hits?", "wm_showhits")
-			cpanel:Help("Other"):SetFont("DermaLarge_WM")
-			cpanel:CheckBox("Place decals?", "wm_placedecals")
-			cpanel:CheckBox("Enable view punch?", "wm_viewpunch")
-			cpanel:NumSlider("View punch scale","wm_viewpunchscale",-5,5,1)
-			cpanel:NumSlider("FOV scale", "wm_fovscale",0,5)
-			cpanel:CheckBox("Enable camera shake?", "wm_camerashake")
-			cpanel:NumSlider("Camera shake scale","wm_camerashakescale",0,10,1)
-			cpanel:CheckBox("Enable crosshair?", "wm_crosshair")
-			cpanel:CheckBox("Enable custom functions?", "wm_customfunctions")
-			cpanel:ControlHelp("Disabling this variable can break some weapons")
-			cpanel:NumSlider("Hits quality","wm_hitsquality",0,5,0)
-			cpanel:ControlHelp("The higher the number, the more impact points (increases the chance of hitting thin objects)")
-			cpanel:Help("Fun"):SetFont("DermaLarge_WM")
-			cpanel:CheckBox("Ignite hit objects?", "wm_funny_burn")
-			cpanel:CheckBox("Shock hit objects?", "wm_funny_shock")
-			cpanel:CheckBox("Makes random names (Need restart)", "wm_funny_randomnames")
-			cpanel:CheckBox("Random hit decals?", "wm_funny_randomdecals")
-			cpanel:Help("Debug"):SetFont("DermaLarge_WM")
-			cpanel:Help("To make debug work you need to enable: developer 1")
-			cpanel:NumSlider("Debug overlay lifetime","wm_debug_livetime",0,30,1)
-			cpanel:CheckBox("Load debug weapons? (Need restart)", "wm_debug_weapons")
-			cpanel:CheckBox("Mark hit points?", "wm_debug_showhit")
-			cpanel:CheckBox("Mark damage?", "wm_debug_showdamage")
+			
+			local warn = cpanel:Help("#wm.cpanel.warn")
+			warn:SetColor(Color(255,0,0))
+			cpanel:Help("#wm.cpanel.category.base"):SetFont("DermaLarge_WM")
+			cp("enabled")
+			cp("categorytop")
+			cp("onlyadmin")
+			cp("funny_weapons")
+			cp("extendeddesc")
+			cp("takeweapons")
+			cp("npccanuse")
+			cp("npcweapons")
+			cp("slot",0,5,0)
+			cpanel:Help("#wm.cpanel.category.melee"):SetFont("DermaLarge_WM")
+			cp("canblock")
+			cp("blockscale",0,1)
+			cp("blockspeed",0.01,10,1)
+			cp("legsblock")
+			cp("distancescale",0,10,1)
+			cp("attackwaitscale",0,10,1)
+			cp("kickscale",0,10,1)
+			cp("inertiascale",0,10,1)
+			cp("attackunderwater")
+			cp("entityprior")
+			cpanel:Help("#wm.cpanel.category.damage"):SetFont("DermaLarge_WM")
+			cp("damagescale",0,10,1)
+			cp("damagescale_player",0,10,1)
+			cp("damagescale_prop",0,10,1)
+			cp("damagescale_headshot",0,10,1)
+			if ragmod then
+				cp("ragdollize")
+				cp("ragdollize_needdamage",0,100,0)
+			end
+			cp("interimhittomain")
+			cp("hitcenter")
+			cpanel:Help("#wm.cpanel.category.gui"):SetFont("DermaLarge_WM")
+			cp("showhits")
+			cpanel:Help("#wm.cpanel.category.other"):SetFont("DermaLarge_WM")
+			cp("placedecals")
+			cp("viewpunch")
+			cp("viewpunchscale",-5,5,1)
+			cp("fovscale",0,5)
+			cp("camerashake")
+			cp("camerashakescale",0,10,1)
+			cp("crosshair")
+			cp("customfunctions")
+			cpanel:ControlHelp("#wm.cpanel.d.customfunctions.desc")
+			cp("hitsquality",0,5,0)
+			cpanel:ControlHelp("#wm.cpanel.d.hitsquality.desc")
+			cp("bobbingscale",0,10,1)
+			cp("swayscale",0,10,1)
+			cp("idlescale",0,10,1)
+			cpanel:Help("#wm.cpanel.category.fun"):SetFont("DermaLarge_WM")
+			cp("funny_burn")
+			cp("funny_shock")
+			cp("funny_randomnames")
+			cp("funny_randomdecals")
+			cpanel:Help("#wm.cpanel.category.debug"):SetFont("DermaLarge_WM")
+			cpanel:Help("#wm.cpanel.d.debug")
+			cp("debug_livetime",0,30,1)
+			cp("debug_weapons")
+			cp("debug_showhit")
+			cp("debug_showfailhit")
+			cp("debug_showdamage")
 		end)
 	end)
 end
@@ -155,9 +179,15 @@ function e(text)
 	end
 end
 
+function ec(text)
+	if CLIENT then
+		print("[WM ERROR] "..text)
+	end
+end
+
 p("_________________________________________________________________________________")
 if GetConVar("wm_enabled"):GetBool() then p("WMLib loaded!") else p("WMLib disabled!") end
-p("WMLib wiki - https://woowz11.github.io/woowzsite/woowzmelee_wiki.html")
+p("WMLib wiki - "..WMLib.Wiki)
 p("")
 
 local category_main = "Woowz Melee"
@@ -176,7 +206,11 @@ end
 function IfNil(val,key,def)
 	if val == nil then return def end
 	if key == nil then
-		return nil
+		if val == nil then
+			return def
+		else
+			return val
+		end
 	else
 		if val[key] == nil then return def else return val[key] end
 	end
@@ -200,8 +234,14 @@ function DrawSphere(pos,size,lifetime,color,typ)
 	end
 end
 
+function CreateDust(pos,velocity,size,lifetime,color)
+	net.Start("wm_CreateDust")
+	net.WriteTable({IfNil(pos,nil,Vector(0,0,0)),IfNil(velocity,nil,Vector(0,0,0)),IfNil(size,nil,5),IfNil(lifetime,nil,5),IfNil(color,nil,Color(128,128,128,50))})
+	net.Send(player.GetAll())
+end
+
 local HitMaterialDecals = {
-	[MAT_CONCRETE  ] = {"decals/wm/concrete/1","decals/wm/concrete/2","decals/wm/concrete/3","decals/wm/concrete/4"},
+	[MAT_CONCRETE  ] = {"decals/wm/concrete/1","decals/wm/concrete/2","decals/wm/concrete/3","decals/wm/concrete/4","decals/wm/concrete/5"},
 	[MAT_WOOD      ] = {"decals/wood/shot1","decals/wood/shot2","decals/wood/shot3","decals/wood/shot4","decals/wood/shot5",},
 	[MAT_METAL     ] = {"decals/wm/metal/1","decals/wm/metal/2","decals/wm/metal/3"},
 	[MAT_VENT      ] = {"decals/metal/shot1","decals/metal/shot2","decals/metal/shot3","decals/metal/shot4","decals/metal/shot5","decals/metal/shot6","decals/metal/shot7"},
@@ -211,33 +251,35 @@ local HitMaterialDecals = {
 	[MAT_GLASS     ] = {"decals/glass/shot1","decals/glass/shot2","decals/glass/shot3","decals/glass/shot4","decals/glass/shot5"},
 	[MAT_COMPUTER  ] = {"decals/metal/shot1","decals/metal/shot2","decals/metal/shot3","decals/metal/shot4","decals/metal/shot5","decals/metal/shot6","decals/metal/shot7"},
 	[MAT_FLESH     ] = {"decals/flesh/blood1","decals/flesh/blood2","decals/flesh/blood3","decals/flesh/blood4","decals/flesh/blood5"},
+	[MAT_ALIENFLESH] = {"decals/flesh/blood1","decals/flesh/blood2","decals/flesh/blood3","decals/flesh/blood4","decals/flesh/blood5"},
 	[MAT_GRASS     ] = {"empty"},
 	[MAT_SLOSH     ] = {"empty"},
-	["sharp"       ] = {"decals/manhackcut"},
+	["sharp"       ] = {"decals/wm/sharp/1","decals/wm/sharp/1","decals/wm/sharp/1","decals/wm/sharp/2"},
 	["sharp_flesh" ] = {"decals/flesh/blood1","decals/flesh/blood2","decals/flesh/blood3","decals/flesh/blood4","decals/flesh/blood5"},
 }
 local HitMaterialSounds = {
-	[MAT_CONCRETE] = {"physics/concrete/rock_impact_hard4.wav","physics/concrete/rock_impact_hard5.wav","physics/concrete/rock_impact_hard6.wav","physics/concrete/rock_impact_hard3.wav","physics/concrete/rock_impact_hard2.wav","physics/concrete/rock_impact_hard1.wav"},
-	[MAT_WOOD    ] = {"physics/wood/wood_box_impact_bullet1.wav","physics/wood/wood_box_impact_bullet2.wav","physics/wood/wood_box_impact_bullet3.wav","physics/wood/wood_box_impact_bullet4.wav"},
-	[MAT_METAL   ] = {"physics/metal/metal_box_impact_bullet1.wav","physics/metal/metal_box_impact_bullet2.wav","physics/metal/metal_box_impact_bullet3.wav","physics/metal/metal_box_impact_hard1.wav","physics/metal/metal_box_impact_hard2.wav","physics/metal/metal_box_impact_hard3.wav","physics/metal/metal_solid_impact_soft1.wav"},
-	[MAT_DEFAULT ] = {"physics/concrete/concrete_impact_bullet1.wav","physics/concrete/concrete_impact_bullet2.wav","physics/concrete/concrete_impact_bullet3.wav","physics/concrete/concrete_impact_bullet4.wav"},
-	[MAT_GRATE   ] = {"physics/metal/metal_chainlink_impact_hard1.wav","physics/metal/metal_chainlink_impact_hard2.wav","physics/metal/metal_chainlink_impact_hard3.wav"},
-	[MAT_PLASTIC ] = {"physics/plastic/plastic_box_impact_bullet4.wav","physics/plastic/plastic_box_impact_bullet5.wav","physics/plastic/plastic_box_impact_hard1.wav","physics/plastic/plastic_box_impact_hard2.wav","physics/plastic/plastic_box_impact_hard3.wav","physics/plastic/plastic_box_impact_hard4.wav"},
-	[MAT_GLASS   ] = {"physics/glass/glass_impact_hard1.wav","physics/glass/glass_impact_hard2.wav","physics/glass/glass_impact_hard3.wav","physics/glass/glass_impact_soft1.wav","physics/glass/glass_impact_soft2.wav","physics/glass/glass_sheet_impact_hard1.wav","physics/glass/glass_sheet_impact_hard2.wav","physics/glass/glass_sheet_impact_hard3.wav","physics/glass/glass_sheet_impact_soft1.wav"},
-	[MAT_COMPUTER] = {"physics/metal/metal_computer_impact_hard1.wav","physics/metal/metal_computer_impact_hard2.wav","physics/metal/metal_computer_impact_hard3.wav","physics/metal/metal_computer_impact_soft1.wav","physics/metal/metal_computer_impact_soft2.wav","physics/metal/metal_computer_impact_soft3.wav","physics/metal/metal_computer_impact_bullet1.wav","physics/metal/metal_computer_impact_bullet2.wav","physics/metal/metal_computer_impact_bullet3.wav"},
-	[MAT_FLESH   ] = {"physics/flesh/flesh_impact_hard1.wav","physics/flesh/flesh_impact_hard2.wav","physics/flesh/flesh_impact_hard3.wav","physics/flesh/flesh_impact_hard4.wav","physics/flesh/flesh_impact_hard5.wav","physics/flesh/flesh_impact_hard6.wav"},
-	[MAT_SAND    ] = {"physics/surfaces/sand_impact_bullet1.wav","physics/surfaces/sand_impact_bullet2.wav","physics/surfaces/sand_impact_bullet3.wav","physics/surfaces/sand_impact_bullet4.wav"},
-	[MAT_VENT    ] = {"physics/metal/metal_grate_impact_hard1.wav","physics/metal/metal_grate_impact_hard2.wav","physics/metal/metal_grate_impact_hard3.wav"},
-	[MAT_TILE    ] = {"impact/tile/1.wav","impact/tile/2.wav","impact/tile/3.wav","impact/tile/4.wav","impact/tile/5.wav"}
+	[MAT_CONCRETE  ] = {"physics/concrete/rock_impact_hard4.wav","physics/concrete/rock_impact_hard5.wav","physics/concrete/rock_impact_hard6.wav","physics/concrete/rock_impact_hard3.wav","physics/concrete/rock_impact_hard2.wav","physics/concrete/rock_impact_hard1.wav"},
+	[MAT_WOOD      ] = {"physics/wood/wood_box_impact_bullet1.wav","physics/wood/wood_box_impact_bullet2.wav","physics/wood/wood_box_impact_bullet3.wav","physics/wood/wood_box_impact_bullet4.wav"},
+	[MAT_METAL     ] = {"physics/metal/metal_box_impact_bullet1.wav","physics/metal/metal_box_impact_bullet2.wav","physics/metal/metal_box_impact_bullet3.wav","physics/metal/metal_box_impact_hard1.wav","physics/metal/metal_box_impact_hard2.wav","physics/metal/metal_box_impact_hard3.wav","physics/metal/metal_solid_impact_soft1.wav"},
+	[MAT_DEFAULT   ] = {"physics/concrete/concrete_impact_bullet1.wav","physics/concrete/concrete_impact_bullet2.wav","physics/concrete/concrete_impact_bullet3.wav","physics/concrete/concrete_impact_bullet4.wav"},
+	[MAT_GRATE     ] = {"physics/metal/metal_chainlink_impact_hard1.wav","physics/metal/metal_chainlink_impact_hard2.wav","physics/metal/metal_chainlink_impact_hard3.wav"},
+	[MAT_PLASTIC   ] = {"physics/plastic/plastic_box_impact_bullet4.wav","physics/plastic/plastic_box_impact_bullet5.wav","physics/plastic/plastic_box_impact_hard1.wav","physics/plastic/plastic_box_impact_hard2.wav","physics/plastic/plastic_box_impact_hard3.wav","physics/plastic/plastic_box_impact_hard4.wav"},
+	[MAT_GLASS     ] = {"physics/glass/glass_impact_hard1.wav","physics/glass/glass_impact_hard2.wav","physics/glass/glass_impact_hard3.wav","physics/glass/glass_impact_soft1.wav","physics/glass/glass_impact_soft2.wav","physics/glass/glass_sheet_impact_hard1.wav","physics/glass/glass_sheet_impact_hard2.wav","physics/glass/glass_sheet_impact_hard3.wav","physics/glass/glass_sheet_impact_soft1.wav"},
+	[MAT_COMPUTER  ] = {"physics/metal/metal_computer_impact_hard1.wav","physics/metal/metal_computer_impact_hard2.wav","physics/metal/metal_computer_impact_hard3.wav","physics/metal/metal_computer_impact_soft1.wav","physics/metal/metal_computer_impact_soft2.wav","physics/metal/metal_computer_impact_soft3.wav","physics/metal/metal_computer_impact_bullet1.wav","physics/metal/metal_computer_impact_bullet2.wav","physics/metal/metal_computer_impact_bullet3.wav"},
+	[MAT_FLESH     ] = {"physics/flesh/flesh_impact_hard1.wav","physics/flesh/flesh_impact_hard2.wav","physics/flesh/flesh_impact_hard3.wav","physics/flesh/flesh_impact_hard4.wav","physics/flesh/flesh_impact_hard5.wav","physics/flesh/flesh_impact_hard6.wav"},
+	[MAT_SAND      ] = {"physics/surfaces/sand_impact_bullet1.wav","physics/surfaces/sand_impact_bullet2.wav","physics/surfaces/sand_impact_bullet3.wav","physics/surfaces/sand_impact_bullet4.wav"},
+	[MAT_VENT      ] = {"physics/metal/metal_grate_impact_hard1.wav","physics/metal/metal_grate_impact_hard2.wav","physics/metal/metal_grate_impact_hard3.wav"},
+	[MAT_TILE      ] = {"impact/tile/1.wav","impact/tile/2.wav","impact/tile/3.wav","impact/tile/4.wav","impact/tile/5.wav"}
 }
 local HitMaterialSoundsSharp = {
-	[MAT_DEFAULT] = {"impact/sharp/default/1.wav","impact/sharp/default/2.wav","impact/sharp/default/3.wav"},
-	[MAT_METAL  ] = {"weapons/l4d2_kf2_katana/katana_impact_world1.wav","weapons/l4d2_kf2_katana/katana_impact_world2.wav"},
-	[MAT_FLESH  ] = {"weapons/l4d2_kf2_katana/melee_katana_01.wav","weapons/l4d2_kf2_katana/melee_katana_02.wav","weapons/l4d2_kf2_katana/melee_katana_03.wav"},
+	[MAT_DEFAULT   ] = {"impact/sharp/default/1.wav","impact/sharp/default/2.wav","impact/sharp/default/3.wav"},
+	[MAT_METAL     ] = {"impact/sharp/metal/1.wav","impact/sharp/metal/2.wav"},
+	[MAT_FLESH     ] = {"impact/sharp/flesh/1.wav","impact/sharp/flesh/2.wav","impact/sharp/flesh/3.wav"},
 }
 local HitMaterialParticles = {
-	[MAT_METAL   ] = {"MetalSpark",0},
-	[MAT_DEFAULT ] = {"RagdollImpact",0}
+	[MAT_METAL     ] = {"MetalSpark",0},
+	[MAT_FLESH     ] = {"BloodImpact",0},
+	[MAT_DEFAULT   ] = {"dust",0}
 }
 
 local newmaterials = hookRun("WM_HitInfoLoad",HitMaterialDecals,HitMaterialSounds,HitMaterialSoundsSharp,HitMaterialParticles)
@@ -259,7 +301,7 @@ p("Materials loaded!")
 function PlaySoundAndEffect(ray,owner,HMS,sound,particle)
 	local pitch = math.random(50,150)
 	if sharp then
-		pitch = math.random(100,120)
+		pitch = math.random(110,120)
 	end
 	if HMS[sound] == nil then sound = MAT_DEFAULT end
 	owner:EmitSound( Sound(HMS[sound][math.random(1,#HMS[sound])]),75,pitch)
@@ -268,12 +310,16 @@ function PlaySoundAndEffect(ray,owner,HMS,sound,particle)
 	end
 	if HitMaterialParticles[particle] == nil then particle = MAT_DEFAULT end
 	if HitMaterialParticles[particle] ~= "empty" then
-		local particleinfo = HitMaterialParticles[particle]
-		local effectInfo = EffectData()
-		effectInfo:SetOrigin(ray.HitPos)
-		effectInfo:SetEntity(ray.Entity)
-		effectInfo:SetScale(10)
-		util.Effect( particleinfo[1], effectInfo )
+		if HitMaterialParticles[particle][1] == "dust" then
+			CreateDust(ray.HitPos,ray.HitNormal)
+		else
+			local particleinfo = HitMaterialParticles[particle]
+			local effectInfo = EffectData()
+			effectInfo:SetOrigin(ray.HitPos)
+			effectInfo:SetEntity(ray.Entity)
+			effectInfo:SetScale(10)
+			util.Effect( particleinfo[1], effectInfo )
+		end
 	end
 end
 
@@ -284,7 +330,10 @@ function HitMaterial(ray,owner,info)
 	local particle = material
 	local sound = material
 	if material == MAT_ANTLION or material == MAT_BLOODYFLESH or material == MAT_ALIENFLESH then
-		material = MAT_FLESH --не забыть про кровь зомби и т.д
+		material = MAT_FLESH
+		if material == MAT_ANTLION or material == MAT_ALIENFLESH then
+			material = MAT_ALIENFLESH
+		end
 		sound = MAT_FLESH
 		particle = MAT_FLESH
 	end
@@ -339,6 +388,7 @@ function HitMaterial(ray,owner,info)
 end
 
 function PreHit(owner,info,startray)
+if owner:IsPlayer() then owner:LagCompensation(true) end
 	local forward = owner:EyeAngles() + startray
 	local base = owner:EyePos() + (forward:Forward() * (Get(info,"AttackDistance",70)*math.max(0,GetConVar("wm_distancescale"):GetFloat())))
 	local rayInfo = {
@@ -348,6 +398,7 @@ function PreHit(owner,info,startray)
 		mask = MASK_SOLID,
 	}
 	local ray = util.TraceLine(rayInfo)
+	if owner:IsPlayer() then owner:LagCompensation(false) end
 	if ray.Hit then
 		if not ray.HitWorld then
 			return true
@@ -359,6 +410,7 @@ end
 local debugdamagehits = -1
 function Hit(owner,info,startray,dont,count,entityonray,afterhit)
 	if IsValid(owner) then
+		if owner:IsPlayer() then owner:LagCompensation(true) end
 		local forward = owner:EyeAngles() + startray
 		local base = owner:EyePos() + (forward:Forward() * (Get(info,"AttackDistance",70)*math.max(0,GetConVar("wm_distancescale"):GetFloat())))
 		local rayInfo = {
@@ -368,6 +420,7 @@ function Hit(owner,info,startray,dont,count,entityonray,afterhit)
 			mask = MASK_SOLID,
 		}
 		local ray = util.TraceLine(rayInfo)
+		if owner:IsPlayer() then owner:LagCompensation(false) end
 		
 		local damageinfo = Get(info,"Damage",Vector(10,10))
 		local damage = math.random(damageinfo.x,damageinfo.y)
@@ -398,11 +451,13 @@ function Hit(owner,info,startray,dont,count,entityonray,afterhit)
 			local effectstring = IfNil(notignore,3,"watersplash")
 			if watersplashsize>0 then
 				if rayWater.HitNormal == Vector(0,0,1) then
-					local effectInfo2 = EffectData()
-					effectInfo2:SetOrigin(rayWater.HitPos)
-					effectInfo2:SetScale(watersplashsize)
-					effectInfo2:SetEntity(rayWater.Entity);
-					util.Effect(effectstring, effectInfo2)
+					local effectInfo = EffectData()
+					effectInfo:SetOrigin(rayWater.HitPos)
+					effectInfo:SetScale(watersplashsize)
+					effectInfo:SetEntity(rayWater.Entity);
+					effectInfo:SetFlags(0)
+					effectInfo:SetColor(0)
+					util.Effect(effectstring, effectInfo)
 				end
 			end
 		end
@@ -496,6 +551,11 @@ function Hit(owner,info,startray,dont,count,entityonray,afterhit)
 								if entity_block then
 									local mat = Get(ent_info,"Material",MAT_METAL)
 									PlaySoundAndEffect(ray,owner,HMS,mat,mat)
+									if Get(info,"Heavy",false) and GetConVar("wm_canblock"):GetBool() then
+										entity.WMCanBlock = false
+										local timer_ = math.random(50,150)/25
+										timerSimple(timer_,function() if IsValid(entity) then entity.WMCanBlock = true end end)
+									end
 								else
 									local entity_vj_base = entity.IsVJBaseSNPC
 									
@@ -544,6 +604,7 @@ function Hit(owner,info,startray,dont,count,entityonray,afterhit)
 										hittyp = "headshot"
 									end
 									
+									local damagewithoutblock = damage
 									if entity_block then
 										damage = damage * Get(ent_info,"BlockPower",0.25) * math.max(GetConVar("wm_blockscale"):GetFloat(),0)
 										hittyp = "block"
@@ -578,8 +639,8 @@ function Hit(owner,info,startray,dont,count,entityonray,afterhit)
 									entity:TakeDamage( damage, owner, owner:GetActiveWeapon() )
 									if entity_block then
 										local blockhitfunc = Get(ent_info,"BlockHitFunction",nil)
-										if blockhitfunc ~= nil then
-											blockhitfunc(entity,owner,damage)
+										if blockhitfunc ~= nil and GetConVar("wm_customfunctions"):GetBool() then
+											blockhitfunc(entity,owner,damage,damagewithoutblock)
 										end
 									end
 									if ragmod and entity:IsPlayer() and GetConVar("wm_ragdollize"):GetBool() then
@@ -646,7 +707,7 @@ function Hit(owner,info,startray,dont,count,entityonray,afterhit)
 											ray.MatType = MAT_GLASS
 											if damagep >= 10 then
 												hittyp = "glass"
-												entity:Input("Shatter",owner,owner:GetActiveWeapon())
+												owner:FireBullets({["Src"] = ray.HitPos,["Dir"] = ray.Normal})
 												if debugdamage then
 													debugoverlay.EntityTextAtPosition(ray.HitPos,lineindex,"Glass shattered",lifetime*2,Color(100,100,255))
 													lineindex=lineindex+1
@@ -706,6 +767,12 @@ function Hit(owner,info,startray,dont,count,entityonray,afterhit)
 					DrawSphere(ray.HitPos,size,lifetime,color,hittyp)
 				end
 			end
+		else
+			if GetConVar("wm_debug_showfailhit"):GetBool() then
+				local col = Color(128,128,128)
+				if rayWater.Hit then col = Color(64,64,128) end
+				DrawSphere(base,1,lifetime,col,"default")
+			end
 		end
 		
 		local hitfuncaft = Get(info,"HitAfterFunction",function()end)
@@ -735,13 +802,16 @@ end
 hookAdd("PlayerCanPickupWeapon","AllowPickUpWeapon",PickupWeapon)
 
 function dt()
-	return RealFrameTime()*200
+	return FrameTime()/engine.TickInterval()
 end
 
 if SERVER then
 	util.AddNetworkString("wm_PlaceDecal")
 	util.AddNetworkString("wm_ClientHit")
 	util.AddNetworkString("wm_ClientHitDebug")
+	util.AddNetworkString("wm_CreateDust")
+	util.AddNetworkString("wm_AttackFunctionInfo")
+	util.AddNetworkString("wm_CreateParticle")
 else
 	local lasthitpos = {}
 	local debughitpos = {}
@@ -766,7 +836,7 @@ else
 					lasthitpos[_] = lhp
 				end
 			end
-			if GetConVar("wm_debug_showhit"):GetBool() then
+			if GetConVar("wm_debug_showhit"):GetBool() or GetConVar("wm_debug_showfailhit"):GetBool() then
 				for _, lhp in pairs(debughitpos) do
 					if lhp[4] ~= Color(255,0,0) and lhp[4] ~= Color(0,0,255) then
 						render.SetMaterial(debughitmaterials[lhp[5]])
@@ -776,7 +846,7 @@ else
 							alpha = 0
 						end
 						render.DrawSprite(lhp[1],size,size,ColorAlpha(lhp[4],alpha))
-						lhp[6] = math.max(0,lhp[6]-(dt()*1.5)/lhp[3])
+						lhp[6] = math.max(0,lhp[6]-(dt()*5)/lhp[3])
 						debughitpos[_] = lhp
 					end
 				end
@@ -789,7 +859,7 @@ else
 							alpha = 0
 						end
 						render.DrawSprite(lhp[1],size,size,ColorAlpha(lhp[4],alpha))
-						lhp[6] = math.max(0,lhp[6]-(dt()*1.5)/lhp[3])
+						lhp[6] = math.max(0,lhp[6]-(dt()*5)/lhp[3])
 						debughitpos[_] = lhp
 					end
 				end
@@ -821,6 +891,84 @@ else
 		timerSimple(info[3],function() debughitpos[index] = nil end)
 		debughitpos[index] = {info[1],info[2],info[3],info[4],info[5],255}
 	end)
+	
+	net.Receive("wm_CreateDust", function(len, ply)
+		local info = net.ReadTable()
+		local emitter = ParticleEmitter(info[1])
+		local rand = math.random(5,15)
+		local materials = {"effects/wm/dust","effects/wm/dust2"}
+		for i = 1,rand do
+			local mat = math.random(1,#materials)
+			local part = emitter:Add(materials[mat],info[1])
+			if part then
+				part:SetDieTime(info[4])
+				part:SetStartAlpha(info[5].a)
+				part:SetEndAlpha(0)
+				part:SetColor(info[5].r,info[5].g,info[5].b)
+				part:SetLighting(true)
+				
+				part:SetStartSize(2)
+				part:SetEndSize(info[3]*10)
+				
+				local downvel = -math.random(5,15)
+				if mat == 2 then downvel = downvel * 2 end
+				part:SetGravity(Vector( math.random()-0.5, math.random()-0.5, downvel))
+				part:SetVelocity(((VectorRand()*info[2]*2)/2+(info[2]/2))*10)
+				part:SetRoll(math.random(-180,180))
+			end
+		end	
+		emitter:Finish()
+	end)
+	
+	net.Receive("wm_CreateParticle", function(len, ply)
+		local info = net.ReadTable()
+		if info["Count"] > 0 then
+			local emitter = ParticleEmitter(info["Position"])
+			local materials = info["Texture"]
+			if type(info["Texture"]) == "string" then materials = {info["Texture"]} end
+			
+			for i = 1,info["Count"] do
+				local rand = function(def) return def or 1 end
+				if info["Random"] ~= 0 then
+					rand = function(def) return ((math.random()-0.5)*2)*info["Random"] end
+				end
+				local mat = math.random(1,#materials)
+				local part = emitter:Add(materials[mat],info["Position"])
+				if part then
+					part:SetDieTime(info["Lifetime"])
+					part:SetStartAlpha(info["Color"].a)
+					part:SetEndAlpha(info["EndAlpha"])
+					part:SetColor(info["Color"].r,info["Color"].g,info["Color"].b)
+					part:SetLighting(info["UseLight"])
+					
+					part:SetStartSize(info["StartSize"])
+					part:SetEndSize(info["EndSize"])
+					
+					part:SetGravity(info["Gravity"]+Vector(rand(0),rand(0),0))
+					part:SetVelocity(info["Velocity"]+Vector(rand(0),rand(0),rand(0)))
+					part:SetRoll(info["Roll"]+rand()*180)
+					
+					part:SetCollide(info["Collide"])
+					part:SetBounce(info["Bounce"])
+				end
+			end	
+			emitter:Finish()
+		end
+	end)
+	
+	net.Receive("wm_AttackFunctionInfo",function(len,ply)
+		local info = net.ReadTable()
+		local owner = info[2]
+		if IsValid(owner) then
+			if IsValid(owner:GetActiveWeapon()) then
+				local info_ = WMLib.GetInfo(owner:GetActiveWeapon())
+				if info_ ~= nil then
+					local func = Get(info_,"AttackFunctionInfo",function(curinfo,hit,own) return curinfo end)
+					owner:GetActiveWeapon().WMInfo = func(info_,info[1],owner)
+				end
+			end
+		end
+	end)
 end
 
 function LoadWMWeapon(SWEP,info,load_,modinfo)
@@ -831,8 +979,9 @@ function LoadWMWeapon(SWEP,info,load_,modinfo)
 		author = maybe_author
 	end
 	SWEP.Author = author
+	SWEP.Slot = math.Clamp(GetConVar("wm_slot"):GetInt(),0,5)
 	SWEP.ModId = modinfo["ID"]
-	SWEP.Spawnable = load_
+	SWEP.Spawnable = load_ and (not Get(info,"Hide",false) or GetConVar("wm_debug_weapons"):GetBool())
 	local category = tostring(Get(info,"Category",category_main))
 	if category ~= category_main and not GetConVar("wm_funny_randomnames"):GetBool() then
 		category = category_main.." ["..category.."]"
@@ -842,27 +991,35 @@ function LoadWMWeapon(SWEP,info,load_,modinfo)
 		list.Set("ContentCategoryIcons", category, "icons/wm_category.png")
 	end
 	
-		local thatdebug = Get(info,"Debug",false)
+	local thatdebug = Get(info,"Debug",false)
 	
 	SWEP.AdminOnly = GetConVar("wm_onlyadmin"):GetBool() or thatdebug
 	
-	local name = tostring(Get(info,"Name","New Weapon"))
+	local name = tostring(Get(info,"Name","#wm.weapon.newweapon"))
+	if CLIENT then name = language.GetPhrase(name) end
 	if Get(info,"Funny",false) then
-		name = " "..name.." "
+		name = "ᅟ"..name.."ᅟ"
 	end
 	if thatdebug then
 		name = "ㅤ"..name.."ㅤ"
 	end
-	local t = {
-		{"Dam","Entity Damage","216,47,32"},
-		{"PDa","Prop Damage","93,109,216"},
-		{"Del","Delay","73,216,83"},
-		{"ADi","Attack Distance","234,172,49"},
-		{"BPo","Block Power","234,44,196"},
-		{"CFu","Has Custom Functions","230,230,230"},
-		{"Fun","Funny","230,230,230"},
-		{"HIn","Has Inspect Animations","230,230,230"}
+	local t = {}
+	local t_loc = {
+		{"#wm.desc.entitydamage","216,47,32"},
+		{"#wm.desc.propdamage","93,109,216"},
+		{"#wm.desc.delay","73,216,83"},
+		{"#wm.desc.attackdistance","234,172,49"},
+		{"#wm.desc.blockpower","234,44,196"},
+		{"#wm.desc.customfunc","230,230,230"},
+		{"#wm.desc.funny","230,230,230"},
+		{"#wm.desc.inspectanims","230,230,230"}
 	}
+	if CLIENT then
+		for _, t_loc_ in pairs(t_loc) do
+			local t1, t2 = language.GetPhrase(t_loc_[1]):match("^(.*)|(.*)$")
+			t[_] = {t1,t2,t_loc_[2]}
+		end
+	end
 	local icon = tostring(Get(info,"Icon","icons/wm_empty.png"))
 	if GetConVar("wm_funny_randomnames"):GetBool() and not thatdebug then
 		icon = "icons/wm_empty.png"
@@ -874,37 +1031,41 @@ function LoadWMWeapon(SWEP,info,load_,modinfo)
 		end
 		SWEP.DrawWeaponInfoBox = false
 	else
-		local desc_damage = Get(info,"Damage",Vector(10,10))
-		local desc_damage_prop = Get(info,"DamageProp",Vector(0,0))
-		if desc_damage_prop.x == 0 and desc_damage_prop.y == 0 then
-			desc_damage_prop = Vector(desc_damage.x/5,desc_damage.y/5)
+		if CLIENT then
+			local desc_damage = Get(info,"Damage",Vector(10,10))
+			local desc_damage_prop = Get(info,"DamageProp",Vector(0,0))
+			if desc_damage_prop.x == 0 and desc_damage_prop.y == 0 then
+				desc_damage_prop = Vector(desc_damage.x/5,desc_damage.y/5)
+			end
+			
+			local inst = language.GetPhrase("#wm.desc.from")..": "..language.GetPhrase(modinfo["Name"]).."\n\n"
+			local index = 1
+			if GetConVar("wm_extendeddesc"):GetBool() then
+				index = 2
+			end
+			function inst_(i,text)
+				inst = inst..t[i][index]..": "..text.."\n"
+			end
+			inst_(1,desc_damage.x.."-"..desc_damage.y)
+			inst_(2,desc_damage_prop.x.."-"..desc_damage_prop.y)
+			inst_(3,(Get(info,"AttackWait",Vector(1,0,0))[1]+Get(info,"AttackHitWait",0)))
+			inst_(4,Get(info,"AttackDistance",70))
+			inst_(5,math.ceil(1/math.max(Get(info,"BlockPower",0.25),0.0001))-1)
+			inst_(6,tostring(Get(info,"PreAttackFunctionInfo","") ~= "" or Get(info,"HitAfterFunction","") ~= "" or Get(info,"HitFunction","") ~= "") or Get(info,"AttackFunctionInfo") ~= "" or Get(info,"StartInfo") ~= "")
+			inst_(7,tostring(Get(info,"Funny",false)))
+			inst_(8,tostring(Get(info,"AnimationInspect","")~=""))
+			SWEP.Instructions = inst
+			SWEP.DrawWeaponInfoBox = true
 		end
-		
-		local inst = "From: "..modinfo["Name"].."\n\n"
-		local index = 1
-		if GetConVar("wm_extendeddesc"):GetBool() then
-			index = 2
-		end
-		function inst_(i,text)
-			inst = inst..t[i][index]..": "..text.."\n"
-		end
-		inst_(1,desc_damage.x.."-"..desc_damage.y)
-		inst_(2,desc_damage_prop.x.."-"..desc_damage_prop.y)
-		inst_(3,(Get(info,"AttackWait",Vector(1,0,0))[1]+Get(info,"AttackHitWait",0)))
-		inst_(4,Get(info,"AttackDistance",70))
-		inst_(5,math.ceil(1/math.max(Get(info,"BlockPower",0.25),0.0001))-1)
-		inst_(6,tostring(Get(info,"PreAttackFunctionInfo","") ~= "" or Get(info,"HitAfterFunction","") ~= "" or Get(info,"HitFunction","") ~= ""))
-		inst_(7,tostring(Get(info,"Funny",false)))
-		inst_(8,tostring(Get(info,"AnimationInspect","")~=""))
-		SWEP.Instructions = inst
-		SWEP.DrawWeaponInfoBox = true
 	end
 	SWEP.PrintName = name
 	SWEP.DisableDuplicator = thatdebug
 	if thatdebug then
 		icon = "icons/wm_debug.png"
 	else
-		list.Add( "NPCUsableWeapons", { class = info["Class"],	title = name }  )
+		if (not Get(info,"Hide",false) or GetConVar("wm_debug_weapons"):GetBool()) then
+			list.Add( "NPCUsableWeapons", { class = info["Class"],	title = name }  )
+		end
 	end
 	SWEP.IconOverride = icon
 	if CLIENT then
@@ -960,7 +1121,6 @@ function LoadWMWeapon(SWEP,info,load_,modinfo)
 	end
 	
 	SWEP.IdleScale = Get(info,"IdleScale",1)
-	SWEP.BobScale = Get(info,"BobbingScale",3)
 
 	SWEP.UseHands = true
 	SWEP.ViewModel = Model(tostring(Get(info,"VModel","models/weapons/c_crowbar.mdl")))
@@ -974,7 +1134,7 @@ function LoadWMWeapon(SWEP,info,load_,modinfo)
 		if owner:IsNPC() then
 			self:SetHoldType("melee2")
 		else
-			self:SetHoldType(Get(info,"Hold","melee"))
+			self:SetHoldType(Get(self.WMInfo,"Hold","melee"))
 		end
 	end
 	
@@ -1018,34 +1178,38 @@ function LoadWMWeapon(SWEP,info,load_,modinfo)
 	
 	function SWEP:Deploy()
 		local owner = self:GetOwner()
-		self:SetHoldType(Get(info,"Hold","melee"))
-		local drawanim = Get(info,"AnimationDraw","Draw")
-		local vm = self:GetOwner():GetViewModel()
-		local drawsound = Get(info,"DrawSound","")
+		owner.WMCanBlock = true
+		self:SetHoldType(Get(self.WMInfo,"Hold","melee"))
+		local drawanim = Get(self.WMInfo,"AnimationDraw","Draw")
+		local vm = nil
+		if owner:IsPlayer() then vm = self:GetOwner():GetViewModel() end
+		local drawsound = Get(self.WMInfo,"DrawSound","")
 		if drawsound[1] ~= "" and IsValid(owner) then
 			owner:EmitSound( Sound(drawsound[1]),75,100*drawsound[2])
 		end
-		if drawanim ~= "" then
-			local drawanim_, wait = vm:LookupSequence(drawanim)
-			SWEP.WaitDraw = true
-			vm:SendViewModelMatchingSequence(drawanim_)
-			timerSimple(wait,function()
-				if IsValid(self) then
-					if IsValid(owner) then
-						if owner:GetActiveWeapon() == self then
-							local idleanim = Get(info,"AnimationIdle","")
-							if idleanim ~= "" then
-								vm:SendViewModelMatchingSequence(vm:LookupSequence(idleanim))
+		if owner:IsPlayer() then
+			if drawanim ~= "" then
+				local drawanim_, wait = vm:LookupSequence(drawanim)
+				SWEP.WaitDraw = true
+				vm:SendViewModelMatchingSequence(drawanim_)
+				timerSimple(wait,function()
+					if IsValid(self) then
+						if IsValid(owner) then
+							if owner:GetActiveWeapon() == self then
+								local idleanim = Get(self.WMInfo,"AnimationIdle","")
+								if idleanim ~= "" then
+									vm:SendViewModelMatchingSequence(vm:LookupSequence(idleanim))
+								end
+								SWEP.WaitDraw = false
 							end
-							SWEP.WaitDraw = false
 						end
 					end
+				end)
+			else
+				local idleanim = Get(self.WMInfo,"AnimationIdle","")
+				if idleanim ~= "" then
+					vm:SendViewModelMatchingSequence(vm:LookupSequence(idleanim))
 				end
-			end)
-		else
-			local idleanim = Get(info,"AnimationIdle","")
-			if idleanim ~= "" then
-				vm:SendViewModelMatchingSequence(vm:LookupSequence(idleanim))
 			end
 		end
 		
@@ -1056,6 +1220,21 @@ function LoadWMWeapon(SWEP,info,load_,modinfo)
 		end
 	end
 	
+	--Функция обновления оружия при сохранении------
+	local updateinfoweapon = nil
+	if Entity(1):IsPlayer() then
+		if Entity(1):GetActiveWeapon() then
+			if WMLib.ThatWMWeapon(Entity(1):GetActiveWeapon()) then
+				updateinfoweapon = Entity(1):GetActiveWeapon()
+			end
+		end
+	end
+	if updateinfoweapon then
+		if updateinfoweapon:GetClass() == info["Class"] then
+			updateinfoweapon.WMInfo = info
+		end
+	end
+	-----------------------------------------------
 	function SWEP:Initialize()
 		self:SetHoldType("melee2")
 		self.WoowzMelee = true
@@ -1063,6 +1242,10 @@ function LoadWMWeapon(SWEP,info,load_,modinfo)
 		self.BlockWaitJ = 0
 		self.BlockWaitI = 0
 		self.NowBlock = false
+		local startfunctioninfo = Get(self.WMInfo,"StartInfo",function(i) return i end)
+		if GetConVar("wm_customfunctions"):GetBool() then
+			self.WMInfo = startfunctioninfo(self.WMInfo)
+		end
 		
 		local phys = self:GetPhysicsObject()
 		if IsValid(phys) then
@@ -1073,7 +1256,7 @@ function LoadWMWeapon(SWEP,info,load_,modinfo)
 				[MAT_FLESH   ] = "flesh",
 				[MAT_PLASTIC ] = "plastic"
 			}
-			local mat = Get(matresults,Get(info,"Material",MAT_METAL),"metal")
+			local mat = Get(matresults,Get(self.WMInfo,"Material",MAT_METAL),"metal")
 			phys:SetMaterial(mat)
 		end
 		
@@ -1091,22 +1274,35 @@ function LoadWMWeapon(SWEP,info,load_,modinfo)
 		self.DrawCrosshair = GetConVar("wm_crosshair"):GetBool()
 		local owner = self:GetOwner()
 		if IsValid(owner) then
-			if owner:IsPlayer() and SERVER then
-				self.BlockWait = owner:KeyDown(IN_ATTACK2) and not self.AttackWait and GetConVar("wm_canblock"):GetBool() and not SWEP.WaitDraw or Get(info,"AutoBlock",false)
-				local blockspeed = 0.06*Get(info,"BlockWait",1)
-				if self.BlockWait then
-					self.BlockWaitJ = math.min(self.BlockWaitJ+blockspeed,1)
-					self.BlockWaitI = math.ease.InOutQuad(self.BlockWaitJ)
+			if owner:IsPlayer() then
+				if SERVER then
+					self.BlockWait = (owner:KeyDown(IN_ATTACK2) and not self.AttackWait and GetConVar("wm_canblock"):GetBool() and not SWEP.WaitDraw or Get(self.WMInfo,"AutoBlock",false)) and owner.WMCanBlock
+					local blockspeed = 0.06*Get(self.WMInfo,"BlockWait",1)*math.max(0.01,GetConVar("wm_blockspeed"):GetFloat())
+					if self.BlockWait then
+						self.BlockWaitJ = math.min(self.BlockWaitJ+blockspeed*dt()*1.25,1)
+						self.BlockWaitI = math.ease.InOutQuad(self.BlockWaitJ)
+					else
+						self.BlockWaitJ = math.max(self.BlockWaitJ-blockspeed*dt()*1.25,0)
+						self.BlockWaitI = math.ease.InOutQuad(self.BlockWaitJ)
+					end
+					self.NowBlock = self.BlockWaitI > 0.5
+					self:CallOnClient("SetBlockClient",tostring(self.BlockWait))
+					if self.NowBlock then
+						self:SetHoldType(Get(self.WMInfo,"BlockHold","melee2"))
+					else
+						self:SetHoldType(Get(self.WMInfo,"Hold","melee"))
+					end
 				else
-					self.BlockWaitJ = math.max(self.BlockWaitJ-blockspeed,0)
-					self.BlockWaitI = math.ease.InOutQuad(self.BlockWaitJ)
-				end
-				self.NowBlock = self.BlockWaitI > 0.5
-				self:CallOnClient("SetBlockClient",tostring(self.BlockWait))
-				if self.NowBlock then
-					self:SetHoldType(Get(info,"BlockHold","melee2"))
-				else
-					self:SetHoldType(Get(info,"Hold","melee"))
+					local blockspeed = 0.02*Get(self.WMInfo,"BlockWait",1)*math.max(0.01,GetConVar("wm_blockspeed"):GetFloat())
+					if self.BlockWait then
+						self.BlockWaitJ = math.min(self.BlockWaitJ+blockspeed*dt()*1.25,1)
+						self.BlockWaitI = math.ease.InOutQuad(self.BlockWaitJ)
+					else
+						self.BlockWaitJ = math.max(self.BlockWaitJ-blockspeed*dt()*1.25,0)
+						self.BlockWaitI = math.ease.InOutQuad(self.BlockWaitJ)
+					end
+					self.SwayScale = Get(self.WMInfo,"SwayScale",3) * Lerp(self.BlockWaitI,1,0.1) * GetConVar("wm_swayscale"):GetFloat()
+					self.BobScale = Get(self.WMInfo,"BobbingScale",3) * GetConVar("wm_bobbingscale"):GetFloat()
 				end
 			end
 		end
@@ -1115,15 +1311,6 @@ function LoadWMWeapon(SWEP,info,load_,modinfo)
 	function SWEP:SetBlockClient(bool)
 		if CLIENT then
 			self.BlockWait = bool == "true"
-			local blockspeed = 0.06*Get(info,"BlockWait",1)
-			if self.BlockWait then
-				self.BlockWaitJ = math.min(self.BlockWaitJ+blockspeed,1)
-				self.BlockWaitI = math.ease.InOutQuad(self.BlockWaitJ)
-			else
-				self.BlockWaitJ = math.max(self.BlockWaitJ-blockspeed,0)
-				self.BlockWaitI = math.ease.InOutQuad(self.BlockWaitJ)
-			end
-			self.SwayScale = Get(info,"SwayScale",3) * Lerp(self.BlockWaitI,1,0.1)
 		end
 	end
 	
@@ -1132,7 +1319,7 @@ function LoadWMWeapon(SWEP,info,load_,modinfo)
 		local offset = Vector(offsetInfo.x,offsetInfo.y,offsetInfo.z)
 		offset:Rotate(ang)
 		
-		local offset2 = Vector(0,0,math.sin(CurTime()/2)*SWEP.IdleScale)
+		local offset2 = Vector(0,0,math.sin(CurTime()/2)*SWEP.IdleScale*GetConVar("wm_idlescale"):GetFloat())
 		offset2:Rotate(ang)
 		
 		local offset3 = LerpVector(self.BlockWaitI,Vector(0,0,0),Get(info,"BlockPos",Vector(0,0,0)))
@@ -1147,6 +1334,52 @@ function LoadWMWeapon(SWEP,info,load_,modinfo)
 		return pos, ang
 	end
 	
+	local elements_physic = {}
+	function SWEP:ViewModelDrawn(vm)
+		local elements = Get(info,"VModelElements",{})	
+		local bonesinfo = Get(info,"VModelBones",{})
+		
+		for boneid, boneinfo in pairs(bonesinfo) do
+			if not vm:LookupBone(boneid) then
+				ec("Bone ["..boneid.."] not found! E10")
+			end
+		end
+		
+		for i = 0, vm:GetBoneCount()-1 do
+			local boneid = vm:GetBoneName(i)
+			local bp = Vector(0,0,0)
+			local br = Angle(0,0,0)
+			local bs = Vector(1,1,1)
+			local bj = false
+			if bonesinfo[boneid] ~= nil then local boneinfo_ = bonesinfo[boneid] bp = IfNil(boneinfo_,1,Vector(0,0,0)) br = IfNil(boneinfo_,2,Angle(0,0,0)) bs = IfNil(boneinfo_,3,Vector(1,1,1)) bj = IfNil(boneinfo_,4,false) end
+			if boneid ~= nil and boneid ~= "__INVALIDBONE__" then
+				vm:ManipulateBonePosition(i,bp,false)
+				vm:ManipulateBoneAngles(i,br,false)
+				vm:ManipulateBoneScale(i,bs)
+				vm:ManipulateBoneJiggle(i,bj and 1 or 0)
+			end
+		end
+		
+		for _, elementinfo in pairs(elements) do
+			local element = elements_physic[_]
+			if element == nil then
+				element = ClientsideModel(elementinfo[1])
+				element:SetNoDraw(true)
+				table.insert(elements_physic,element)
+			end
+			local boneid = vm:LookupBone(elementinfo[2])
+			local matrix = vm:GetBoneMatrix(boneid)
+			local newPos, newAng = LocalToWorld(elementinfo[3], elementinfo[4], matrix:GetTranslation(), matrix:GetAngles())
+			
+			if string.lower(element:GetModel()) ~= string.lower(elementinfo[1]) then element:SetModel(elementinfo[1]) end
+			element:SetPos(newPos)
+			element:SetAngles(newAng)
+			element:SetupBones()
+			element:ManipulateBoneScale(0,elementinfo[5])
+			element:DrawModel()
+		end
+	end
+	
 	SWEP.WModelVisible = Get(info,"WModelVisible",true)
 	
 	if CLIENT then
@@ -1155,8 +1388,8 @@ function LoadWMWeapon(SWEP,info,load_,modinfo)
 				
 			if self.ClientWorldModel ~= nil then
 				if IsValid(owner) and SWEP.WModelVisible then
-					local offsetVec = Get(info,"WModelPos",Vector(0,0,0)) + LerpVector(self.BlockWaitI,Vector(0,0,0),Get(info,"WBlockPos",Vector(0,0,0)))
-					local offsetAng = Get(info,"WModelRot",Angle(0,0,0)) + LerpAngle(self.BlockWaitI,Angle(0,0,0),Get(info,"WBlockRot",Angle(0,0,-80)))
+					local offsetVec = Get(self.WMInfo,"WModelPos",Vector(0,0,0)) + LerpVector(self.BlockWaitI,Vector(0,0,0),Get(self.WMInfo,"WBlockPos",Vector(0,0,0)))
+					local offsetAng = Get(self.WMInfo,"WModelRot",Angle(0,0,0)) + LerpAngle(self.BlockWaitI,Angle(0,0,0),Get(self.WMInfo,"WBlockRot",Angle(0,0,-80)))
 						
 					local boneid = owner:LookupBone("ValveBiped.Bip01_R_Hand")
 					if !boneid then return end
@@ -1178,6 +1411,7 @@ function LoadWMWeapon(SWEP,info,load_,modinfo)
 					end
 					self.ClientWorldModel:SetAngles(self:GetAngles())
 				end
+				self.ClientWorldModel:ManipulateBoneScale(0,Get(self.WMInfo,"WModelSize",Vector(1,1,1)))
 				self.ClientWorldModel:DrawModel()
 				self.ClientWorldModel:DrawShadow(true)
 			end
@@ -1189,17 +1423,19 @@ function LoadWMWeapon(SWEP,info,load_,modinfo)
 		if owner:IsNPC() then return false end
 		if IsValid(self) and IsValid(owner) then
 			if SERVER then
-				local anims = Get(info,"AnimationInspect","")
+				local anims = Get(self.WMInfo,"AnimationInspect","")
 				local vm = owner:GetViewModel()
-				if not self.AttackWait and (not self.BlockWait or Get(info,"AutoBlock",false)) and not self.CoolAnim and anims ~= "" and IsValid(vm) then
+				if not self.AttackWait and (not self.BlockWait or Get(self.WMInfo,"AutoBlock",false)) and not self.CoolAnim and anims ~= "" and IsValid(vm) then
 					self.CoolAnim = true
 					local anim, animwait = vm:LookupSequence(anims[math.random(1,#anims)])
 					vm:SendViewModelMatchingSequence(anim)
 					timerSimple(animwait,function()
-						self.CoolAnim = false
-						local idleanim = Get(info,"AnimationIdle","")
-						if idleanim ~= "" then
-							vm:SendViewModelMatchingSequence(vm:LookupSequence(idleanim))
+						if IsValid(self) then
+							self.CoolAnim = false
+							local idleanim = Get(self.WMInfo,"AnimationIdle","")
+							if idleanim ~= "" then
+								vm:SendViewModelMatchingSequence(vm:LookupSequence(idleanim))
+							end
 						end
 					end)
 				end
@@ -1221,26 +1457,25 @@ function LoadWMWeapon(SWEP,info,load_,modinfo)
 				end
 			end
 			
-			if not self.AttackWait and (not self.BlockWait or Get(info,"AutoBlock",false)) and not youragdoll and canattack then
+			if not self.AttackWait and (self.BlockWaitI < 0.25 or Get(self.WMInfo,"AutoBlock",false)) and not youragdoll and canattack then
 				self.AttackWait = true
 				
-				local preattackfunctioninfo = Get(info,"PreAttackFunctionInfo",function(i) return i end)
+				local preattackfunctioninfo = Get(self.WMInfo,"PreAttackFunctionInfo",function(i) return i end)
 				
 				if GetConVar("wm_customfunctions"):GetBool() then
-					info = preattackfunctioninfo(info)
-					self.WMInfo = info
+					self.WMInfo = preattackfunctioninfo(self.WMInfo)
 				end
 				
 				local addwait = 0
-				local animstart_table = Get(info,"AnimationHit",{"Misscenter1","Misscenter2"})
+				local animstart_table = Get(self.WMInfo,"AnimationHit",{"Misscenter1","Misscenter2"})
 				local animstart = animstart_table[math.random(1,#animstart_table)]
-				local animend = Get(info,"AnimationHitEnd","")
+				local animend = Get(self.WMInfo,"AnimationHitEnd","")
 				local _, wait2 = 0, 0
 				if owner:IsPlayer() then
 					local vm = owner:GetViewModel()
 					if animend ~= "" then
 						_, wait2 = vm:LookupSequence(animstart)
-						wait2 = wait2 * Get(info,"AnimationHitEndScale",1)
+						wait2 = wait2 * Get(self.WMInfo,"AnimationHitEndScale",1)
 						addwait = addwait + wait2
 					end
 					if SERVER then
@@ -1259,11 +1494,13 @@ function LoadWMWeapon(SWEP,info,load_,modinfo)
 											vm:SendViewModelMatchingSequence(animend_)
 											owner:SetAnimation(PLAYER_ATTACK1)
 											timerSimple(waitend,function()
-												local idleanim = Get(info,"AnimationIdle","")
-												if IsValid(self) and IsValid(vm) then
-													if idleanim ~= "" and not self.AttackWait and IsValid(self:GetOwner()) then
-														if self:GetOwner():GetActiveWeapon() == self then
-															vm:SendViewModelMatchingSequence(vm:LookupSequence(idleanim))
+												if IsValid(self) then
+													local idleanim = Get(self.WMInfo,"AnimationIdle","")
+													if IsValid(self) and IsValid(vm) then
+														if idleanim ~= "" and not self.AttackWait and IsValid(self:GetOwner()) then
+															if self:GetOwner():GetActiveWeapon() == self then
+																vm:SendViewModelMatchingSequence(vm:LookupSequence(idleanim))
+															end
 														end
 													end
 												end
@@ -1277,11 +1514,11 @@ function LoadWMWeapon(SWEP,info,load_,modinfo)
 						owner:SetAnimation(PLAYER_ATTACK1)
 						_, wait = vm:LookupSequence(animstart)
 						timerSimple(wait,function()
-							if SERVER then
+							if SERVER and IsValid(self) then
 								if ragmod then
 									youragdoll = ragmod:IsRagdoll(owner)
 								end
-								local idleanim = Get(info,"AnimationIdle","")
+								local idleanim = Get(self.WMInfo,"AnimationIdle","")
 								if not youragdoll and IsValid(self) then
 									if idleanim ~= "" and not self.AttackWait and IsValid(owner) then
 										if owner:GetActiveWeapon() == self then
@@ -1296,31 +1533,35 @@ function LoadWMWeapon(SWEP,info,load_,modinfo)
 					end
 				end
 				
-				local hitrays_ = Get(info,"Rays",{{Angle(0,0,0),0}})
-				local raysdetails_convar = math.max(0,GetConVar("wm_hitsquality"):GetInt())
-				local raysdetails = Get(info,"RaysDetails",1)+raysdetails_convar
-				if owner:IsNPC() then
-					raysdetails = 1+raysdetails_convar
-				end
-				local onlyoneray = Get(info,"OnlyOneRay",false)
 				local hitrays = {}
-				for i, r in pairs(hitrays_) do
-					if hitrays_[i+1] ~= nil then
-						local nextr = hitrays_[i+1]
-						for j = 0, raysdetails do
-							local newangle = LerpAngle(j/raysdetails,r[1],nextr[1])
-							local newtimer = nextr[2]/raysdetails
-							table.insert(hitrays,{newangle,newtimer,j ~= 0})
+				local onlyoneray = Get(self.WMInfo,"OnlyOneRay",false)
+				if GetConVar("wm_hitcenter"):GetBool() then
+					table.insert(hitrays,{Angle(0,0,0),0})
+				else
+					local hitrays_ = Get(self.WMInfo,"Rays",{{Angle(0,0,0),0}})
+					local raysdetails_convar = math.max(0,GetConVar("wm_hitsquality"):GetInt())
+					local raysdetails = Get(self.WMInfo,"RaysDetails",1)+raysdetails_convar
+					if owner:IsNPC() then
+						raysdetails = 2+raysdetails_convar
+					end
+					for i, r in pairs(hitrays_) do
+						if hitrays_[i+1] ~= nil then
+							local nextr = hitrays_[i+1]
+							for j = 0, raysdetails do
+								local newangle = LerpAngle(j/raysdetails,r[1],nextr[1])
+								local newtimer = nextr[2]/raysdetails
+								table.insert(hitrays,{newangle,newtimer,j ~= 0})
+							end
+						else
+							table.insert(hitrays,r)
 						end
-					else
-						table.insert(hitrays,r)
 					end
 				end
 				
 				if owner:IsPlayer() then
-					local swingsounds = Get(info,"SwingSounds",{"weapons/melee/swing_heavy_blunt_01.wav","weapons/melee/swing_heavy_blunt_02.wav","weapons/melee/swing_heavy_blunt_03.wav"})
+					local swingsounds = Get(self.WMInfo,"SwingSounds",WMLib.SoundsSwing["Heavy"])
 					if swingsounds ~= "empty" then
-						timerSimple(Get(info,"SwingWait",0),function()
+						timerSimple(Get(self.WMInfo,"SwingWait",0),function()
 							if SERVER then
 								local youragdoll = false
 								if ragmod then
@@ -1340,18 +1581,18 @@ function LoadWMWeapon(SWEP,info,load_,modinfo)
 					if owner:IsNPC() then
 						--owner:SetSchedule(SCHED_MELEE_ATTACK1)
 					end
-				timerSimple(Get(info,"AttackHitWait",0)+addwait, function()
+				timerSimple(Get(self.WMInfo,"AttackHitWait",0)+addwait, function()
 					if SERVER then
 						if IsValid(owner) and IsValid(self) then
 							if owner:GetActiveWeapon()==self then
 								local make_interim_hit_to_main_hit = GetConVar("wm_interimhittomain"):GetBool()
 								if owner:IsPlayer() then
-									local inertia = math.max(0,GetConVar("wm_inertiascale"):GetFloat()) * Get(info,"InertiaScale",1)
+									local inertia = math.max(0,GetConVar("wm_inertiascale"):GetFloat()) * Get(self.WMInfo,"InertiaScale",1)
 									if inertia ~= 0 then
 										owner:SetLocalVelocity(owner:GetVelocity() + (owner:GetAimVector() * 100 * inertia) )
 									end
 									if GetConVar("wm_viewpunch"):GetBool() then
-										local vp_ang = Get(info,"PunchAngle",Angle(10,0,0))
+										local vp_ang = Get(self.WMInfo,"PunchAngle",Angle(10,0,0))
 										local vp_ang_scale = GetConVar("wm_viewpunchscale"):GetFloat()
 										vp_ang = Angle(vp_ang.p*vp_ang_scale,vp_ang.y*vp_ang_scale,vp_ang.r*vp_ang_scale)
 										owner:ViewPunch(vp_ang)
@@ -1360,10 +1601,10 @@ function LoadWMWeapon(SWEP,info,load_,modinfo)
 								local t = 0
 								local hitten = false
 								local hasentityonrays = false
-								if owner:IsPlayer() then
+								if owner:IsPlayer() and GetConVar("wm_entityprior"):GetBool() then
 									for i, r in pairs(hitrays) do
 										t = t + r[2]
-										hasentityonrays = hasentityonrays or PreHit(owner,info,r[1])
+										hasentityonrays = hasentityonrays or PreHit(owner,self.WMInfo,r[1])
 									end
 								end
 								local afterhit = false
@@ -1373,11 +1614,11 @@ function LoadWMWeapon(SWEP,info,load_,modinfo)
 										if ragmod and owner:IsPlayer() then
 											youragdoll = ragmod:IsRagdoll(owner)
 										end
-										if not youragdoll then
+										if not youragdoll and IsValid(self) then
 											if r[3] ~= true and not onlyoneray then
 												hitten = false
 											end
-											hitten = Hit(owner,info,r[1],hitten,i/#hitrays,hasentityonrays,afterhit)
+											hitten = Hit(owner,self.WMInfo,r[1],hitten,i/#hitrays,hasentityonrays,afterhit)
 											afterhit = afterhit or hitten
 											if make_interim_hit_to_main_hit then
 												hitten = false
@@ -1385,11 +1626,28 @@ function LoadWMWeapon(SWEP,info,load_,modinfo)
 										end
 									end)
 								end
+								
+								timerSimple(t,function()
+									if IsValid(self) then
+										local attackfunctioninfo = Get(self.WMInfo,"AttackFunctionInfo",function(curinfo,hit,own) return curinfo end)
+							
+										if GetConVar("wm_customfunctions"):GetBool() then
+											if IsValid(owner) then
+												self.WMInfo = attackfunctioninfo(self.WMInfo,afterhit,owner)
+												if owner:IsPlayer() then
+													net.Start("wm_AttackFunctionInfo")
+													net.WriteTable({afterhit,owner})
+													net.Send(owner)
+												end
+											end
+										end
+									end
+								end)
 							end
 						end
 					end
 				end)
-				local attackwaitinfo = Get(info,"AttackWait",Vector(1,0,0))
+				local attackwaitinfo = Get(self.WMInfo,"AttackWait",Vector(1,0,0))
 				local randwait_ = attackwaitinfo.x+math.random(attackwaitinfo.y,attackwaitinfo.z)/100
 				randwait_ = randwait_ * math.max(0,GetConVar("wm_attackwaitscale"):GetFloat())
 				local randwait = randwait_+addwait
@@ -1435,8 +1693,9 @@ WMLib.CreateMelee = function(swep,info,modid)
 						table.insert(WMLib.Weapons,class)
 					end
 					LoadWMWeapon(swep,info,load_,modinfo)
+					return true
 				else
-					e("Cannot load WM weapons because the class ["..swep.Folder..".lua] does not start with \"wm_\"! E1")
+					e("Cannot load WM weapons because the class ["..swep.Folder..".lua] does not start with \"wm_\"!")
 				end
 			else
 				e("Cannot load WM weapons because the class ["..swep.Folder..".lua] is not in the weapons hierarchy! E2")
@@ -1447,6 +1706,7 @@ WMLib.CreateMelee = function(swep,info,modid)
 	else
 		e("No modification with this id ["..tostring(modid).."] (type:"..type(modid)..") was found! E6")
 	end
+	return false
 end
 
 WMLib.GetRandomWeapon = function()
@@ -1461,6 +1721,14 @@ WMLib.DrawSphere = function(pos,size,lifetime,color,typ)
 	if color == nil then color = Color(255,255,255) end
 	if typ == nil then typ = "default" end
 	DrawSphere(pos,size,lifetime,color,typ)
+end
+
+WMLib.CreateDust = function(pos,velocity,size,lifetime,color)
+	CreateDust(pos,velocity,size,lifetime,color)
+end
+
+for modid, mod in pairs(WMLib.Mods) do
+	p("Modification ["..modid.."] loaded!")
 end
 
 p("_________________________________________________________________________________")
