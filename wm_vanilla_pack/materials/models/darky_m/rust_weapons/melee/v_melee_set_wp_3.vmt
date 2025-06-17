@@ -1,0 +1,21 @@
+"VertexLitGeneric"
+{
+	"$basetexture"   "models/darky_m/rust_weapons/melee/MACE_base"
+	"$bumpmap"       "models/darky_m/rust_weapons/melee/MACE_base_n"
+	"$normalmap"       "models/darky_m/rust_weapons/melee/MACE_base_n"
+   
+	"$envmap"	"env_cubemap"
+	"$normalmapalphaenvmapmask" "1"
+	"$envmaptint" "[ 0.01 0.01 0.01 ]"
+
+	"$phong" "1"
+	"$phongexponent" "10"
+	"$phongboost" "0.5"
+	"$phongfresnelranges" "[1 9 3]"
+	"$phongtint" "[0.7 0.9 1]" 
+	"$phongalbedotint" "1"
+
+	"$rimlight" "1"
+	"$rimlightexponent" "26"
+	"$rimlightboost" "0.1"
+} 

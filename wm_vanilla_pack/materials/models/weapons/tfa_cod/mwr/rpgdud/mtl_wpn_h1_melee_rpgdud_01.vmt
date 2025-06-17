@@ -1,0 +1,16 @@
+"VertexLitGeneric"
+{
+	$basetexture "models/weapons/tfa_cod/mwr/rpgdud/base"
+	$bumpmap "models/weapons/tfa_cod/mwr/rpgdud/base_n"
+	$phongexponenttexture "models/weapons/tfa_cod/mwr/rpgdud/base_s"
+
+	$phong	"1"
+	$phongboost	"3"
+	$phongfresnelranges	"[.78 .9 1]"
+	"$phongtint" "[1 1 0.7]" 
+
+	$rimlight	"1"
+	$rimmask	"1"
+	$rimlightboost	"30"
+	$rimlightexponent	"2"
+}

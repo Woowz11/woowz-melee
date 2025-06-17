@@ -1,0 +1,11 @@
+"VertexLitGeneric"
+{
+   "$basetexture"   "models/darky_m/rust_weapons/melee/R_base"
+   "$bumpmap"       "models/darky_m/rust_weapons/melee/R_base_n"
+
+	"$phong" "1"
+	"$phongexponent" "5"
+	"$phongboost" "0.1"
+	"$phongfresnelranges" "[1 9 3]"
+	"$phongalbedotint" "1"
+}

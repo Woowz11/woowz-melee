@@ -1,0 +1,17 @@
+"VertexlitGeneric"
+{
+	"$baseTexture" "models\weapons\screwdriver\base"
+	"$bumpmap" "models\weapons\screwdriver\base_n"
+	
+	"$envmap" "env_cubemap"
+	"$envmaptint" "[0.25 0.25 0.25]"
+	
+	"$phong" "1"
+	"$phongexponent" "20"
+	"$phongboost" "2"	
+	"$phongfresnelranges" "[0.25 0.5 1]"
+
+	"$rimlight" "1"
+	"$rimlightexponent" "4"	
+	"$rimlightboost" "2"
+} 

@@ -1,0 +1,37 @@
+AddCSLuaFile()
+if WMLib then
+	local Info = {
+		Name = "#wm.weapon.crowbar",
+		Icon = "icons/wm_crowbar.png",
+		SelectionIcon = "icons/wm_crowbar_i.png",
+		KillIcon = "icons/wm_crowbar_k.png",
+		Material = MAT_METAL,
+		VModel = "models/wm/crowbar/v.mdl",
+		VModelPos = Vector(3.5,-1.5,-1),
+		VModelRot = Angle(5,-5,-1.5),
+		FOV = 50,
+		WModel = "models/wm/crowbar/w.mdl",
+		Hold = "melee2",
+		Rays = {{Angle(-10,30,0),0},{Angle(0,0,0),0.025},{Angle(10,-30,0),0.025}},
+		RaysDetails = 4,
+		OnlyOneRay = true,
+		WModelPos = Vector(3.2, -1.5, -5),
+		WModelRot = Angle(180, 170, 0),
+		AnimationHit = {"Attack_Quick"},
+		AnimationDraw = "Draw",
+		AnimationIdle = "Idle",
+		AttackWait = Vector(1,-50,0),
+		AttackHitWait = 0.3,
+		Damage = Vector(10,30),
+		DamageProp = Vector(15,30),
+		PunchAngle = Angle(0,-10,0),
+		AttackDistance = 70,
+		BlockPos = Vector(0,10,0),
+		BlockRot = Angle(0,0,-30),
+		WBlockPos = Vector(0,5,0),
+		WBlockRot = Angle(0,0,45),
+		BlockHold = "fist",
+		BlockWait = 0.75,
+	}
+	WMLib.CreateMelee(SWEP,Info,"vanilla")
+end

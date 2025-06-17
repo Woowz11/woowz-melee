@@ -1,0 +1,23 @@
+VertexLitGeneric
+{
+	$baseTexture "models\weapons\tfa_nmrih\tool_barricade\base"
+	$normalmap "models\weapons\tfa_nmrih\tool_barricade\base_n"
+	$bumpmap "models\weapons\tfa_nmrih\tool_barricade\base_n"
+
+	$surfaceprop "metal"
+
+	$envmap "env_cubemap"
+	"$normalmapalphaenvmapmask" "1"
+	"$envmaptint" "[ 0.05 0.05 0.05 ]"
+	$envmapfresnel 1
+
+	$halflambert "1"
+	$phong "1"
+	$phongboost "0.2"
+	$phongexponent "2"
+	$phongfresnelranges "[1 10 8]"
+
+	$rimlight "1"
+	$rimlightexponent "2"
+	$rimlightboost "0.5"
+}

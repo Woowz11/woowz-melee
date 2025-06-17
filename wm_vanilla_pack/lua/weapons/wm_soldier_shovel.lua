@@ -1,0 +1,38 @@
+AddCSLuaFile()
+if WMLib then
+	local Info = {
+		Name = "#wm.weapon.soldier_shovel",
+		Icon = "icons/wm_soldier_shovel.png",
+		SelectionIcon = "icons/wm_soldier_shovel_i.png",
+		KillIcon = "icons/wm_soldier_shovel_k.png",
+		Material = MAT_METAL,
+		VModel = "models/wm/soldier_shovel/v.mdl",
+		VModelPos = Vector(-6,-3,-2),
+		VModelRot = Angle(0,-5,5),
+		FOV = 80,
+		WModel = "models/wm/soldier_shovel/w.mdl",
+		Hold = "melee",
+		Rays = {{Angle(0,-20,0),0},{Angle(0,0,0),0.025},{Angle(0,20,0),0.025}},
+		RaysDetails = 4,
+		OnlyOneRay = true,
+		WModelPos = Vector(4.5, -1.25, -3),
+		WModelRot = Angle(180, 150, 10),
+		AnimationHit = {"Attack_Quick"},
+		AnimationDraw = "Draw",
+		AnimationIdle = "Idle",
+		AttackWait = Vector(1,-30,0),
+		AttackHitWait = 0.4,
+		AttackDistance = 55,
+		Damage = Vector(15,25),
+		DamageProp = Vector(10,20),
+		PunchAngle = Angle(5,5,0),
+		SwingSounds = WMLib.SoundsSwing["Light"],
+		BlockPos = Vector(0,0,5),
+		BlockRot = Angle(0,0,-30),
+		WBlockPos = Vector(0,0,0),
+		WBlockRot = Angle(0,30,-45),
+		BlockHold = "melee2",
+		BlockWait = 1,
+	}
+	WMLib.CreateMelee(SWEP,Info,"vanilla")
+end

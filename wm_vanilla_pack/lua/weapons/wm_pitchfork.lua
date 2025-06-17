@@ -1,0 +1,41 @@
+AddCSLuaFile()
+if WMLib then
+	local Info = {
+		Name = "#wm.weapon.pitchfork",
+		Icon = "icons/wm_pitchfork.png",
+		SelectionIcon = "icons/wm_pitchfork_i.png",
+		KillIcon = "icons/wm_pitchfork_k.png",
+		Material = MAT_WOOD,
+		VModel = "models/wm/pitchfork/v.mdl",
+		VModelPos = Vector(-13,3,0),
+		VModelRot = Angle(0,-2,-10),
+		FOV = 80,
+		WModel = "models/wm/pitchfork/w.mdl",
+		Hold = "knife",
+		Rays = {{Angle(0,-10,0),0},{Angle(0,0,0),0},{Angle(0,10,0),0}},
+		RaysDetails = 4,
+		WModelPos = Vector(-0.5, -1, -0.5),
+		WModelRot = Angle(150, 176, -30),
+		AnimationHit = {"Slash"},
+		AnimationDraw = "Draw",
+		DrawSound = {"weapons/melee/bow-deploy.mp3",0.6},
+		AttackWait = Vector(1,0,50),
+		AttackHitWait = 0.4,
+		Damage = Vector(5,10),
+		DamageProp = Vector(0,10),
+		AttackDistance = 120,
+		PunchAngle = Angle(-5,0,0),
+		InertiaScale = -1,
+		SwayScale = 4,
+		BobbingScale = 4,
+		WaterSplashSize = 5,
+		BlockPos = Vector(10,-40,-10),
+		BlockRot = Angle(0,80,-70),
+		WBlockPos = Vector(0,0,2),
+		WBlockRot = Angle(0,-45,-90),
+		BlockHold = "melee2",
+		BlockWait = 0.25,
+		SwingSounds = WMLib.SoundsSwing["LightSharp"]
+	}
+	WMLib.CreateMelee(SWEP,Info,"vanilla")
+end

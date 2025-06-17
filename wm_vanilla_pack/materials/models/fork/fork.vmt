@@ -1,0 +1,15 @@
+"VertexLitGeneric"
+{
+	"$basetexture" "models/fork/base"
+	"$envmap" "env_cubemap"
+	"$envmaptint" "[0.5 0.5 0.5]"
+
+	"$phong" "1"
+	"$phongexponent" "60"
+	"$phongboost" "10"	
+	"$phongfresnelranges" "[0.25 0.5 1]"
+
+	"$rimlight" "1"
+	"$rimlightexponent" "4"	
+	"$rimlightboost" "2"
+}

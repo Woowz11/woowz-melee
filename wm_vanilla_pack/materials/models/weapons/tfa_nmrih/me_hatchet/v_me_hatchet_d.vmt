@@ -1,0 +1,16 @@
+VertexLitGeneric
+{
+	$halflambert "1"
+
+	$phong "1"
+	$phongtint "[1 1 1]"
+	$phongboost "0.2"
+	$phongexponent "20"
+	$phongfresnelranges "[1 10 8]"
+
+	$basetexture "models\weapons\tfa_nmrih\me_hatchet\base"
+	$bumpmap "models\weapons\tfa_nmrih\me_hatchet\base_n"
+	$normalmap "models\weapons\tfa_nmrih\me_hatchet\base_n"
+	
+	$surfaceprop "metal"
+} 

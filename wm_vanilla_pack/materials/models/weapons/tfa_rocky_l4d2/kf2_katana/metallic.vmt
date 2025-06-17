@@ -1,0 +1,17 @@
+"VertexlitGeneric"
+{
+	$basetexture "models/weapons/tfa_rocky_l4d2/kf2_katana/base"
+	$color2 "[0 0 0]"
+	$bumpmap "models/weapons/tfa_rocky_l4d2/kf2_katana/base_n"
+	$phongexponenttexture "models/weapons/tfa_rocky_l4d2/kf2_katana/base_e"
+	
+	$phong "1"
+	$phongboost "8"
+	$phongalbedotint "1"
+	$phongfresnelranges "[0.20 0.70 1.0]"
+	
+	$additive "1"
+}
+
+
+

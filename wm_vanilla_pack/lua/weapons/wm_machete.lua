@@ -1,0 +1,40 @@
+AddCSLuaFile()
+if WMLib then
+	local Info = {
+		Name = "#wm.weapon.machete",
+		Icon = "icons/wm_machete.png",
+		SelectionIcon = "icons/wm_machete_i.png",
+		KillIcon = "icons/wm_machete_k.png",
+		Material = MAT_METAL,
+		Sharp = true,
+		VModel = "models/wm/machete/v.mdl",
+		VModelPos = Vector(-7,-3,0),
+		VModelRot = Angle(5,-5,-1),
+		FOV = 90,
+		WModel = "models/wm/machete/w.mdl",
+		Hold = "melee",
+		Rays = {{Angle(0,-30,0),0},{Angle(0,0,0),0.05},{Angle(0,30,0),0.05}},
+		RaysDetails = 4,
+		OnlyOneRay = true,
+		WModelPos = Vector(4.25, -1.25, -10),
+		WModelRot = Angle(180, 100, 5),
+		AnimationHit = {"Attack_Quick"},
+		AnimationDraw = "Draw",
+		AnimationIdle = "Idle",
+		AttackWait = Vector(1,0,0),
+		AttackHitWait = 0.1,
+		AttackDistance = 55,
+		Damage = Vector(10,40),
+		DamageProp = Vector(0,5),
+		PunchAngle = Angle(0,10,0),
+		KickScale = 0.25,
+		BlockPos = Vector(0,10,0),
+		BlockRot = Angle(0,0,-30),
+		WBlockPos = Vector(0,-3,0),
+		WBlockRot = Angle(20,0,0),
+		BlockHold = "knife",
+		BlockWait = 1,
+		SwingSounds = WMLib.SoundsSwing["HeavySharp"]
+	}
+	WMLib.CreateMelee(SWEP,Info,"vanilla")
+end

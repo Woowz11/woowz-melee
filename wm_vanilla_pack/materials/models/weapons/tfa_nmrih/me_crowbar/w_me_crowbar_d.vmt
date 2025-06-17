@@ -1,0 +1,13 @@
+VertexLitGeneric
+{
+	$halflambert "1"
+	$phong "1"
+	$phongboost "0.5"
+	$phongexponent "5"
+	$phongfresnelranges "[1 10 8]"
+
+	$basetexture "models\weapons\tfa_nmrih\me_crowbar\base"
+	$bumpmap "models\weapons\tfa_nmrih\me_crowbar\base_n"
+
+	$surfaceprop "metal"
+}

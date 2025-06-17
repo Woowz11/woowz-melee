@@ -1,0 +1,18 @@
+VertexLitGeneric
+{
+	$halflambert "1"
+
+	$phong "1"
+	$phongboost "0.5"
+	$phongexponent "5"
+	$phongfresnelranges "[1 10 8]"
+
+	$envmap "env_cubemap"
+	$envmaptint "[0.1 0.1 0.1]"
+	$normalmapalphaenvmapmask "1"
+	
+	$basetexture "models\weapons\tfa_nmrih\me_pipe_lead\base"
+	$bumpmap "models\weapons\tfa_nmrih\me_pipe_lead\base_n"
+
+	$surfaceprop "metal"
+}

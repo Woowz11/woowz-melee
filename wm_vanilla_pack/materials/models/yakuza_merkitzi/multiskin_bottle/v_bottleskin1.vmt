@@ -1,0 +1,17 @@
+"VertexLitGeneric"
+{
+	"$baseTexture" "models/yakuza_merkitzi/multiskin_bottle/base"
+
+	"$envmap" "env_cubemap"
+	"$envmaptint" "[0.5 1 0.5]"
+	
+	"$phong" "1"
+	"$phongexponent" "60"
+	"$phongboost" "10"	
+	"$phongfresnelranges" "[0.25 0.5 1]"
+	"$basemapalphaphongmask" "1"
+
+	"$rimlight" "1"
+	"$rimlightexponent" "4"	
+	"$rimlightboost" "2"
+}

@@ -1,0 +1,17 @@
+"VertexlitGeneric"
+{
+	"$basetexture" "models/darky_m/rust_weapons/melee/PF_Base"
+	"$bumpmap" "models/darky_m/rust_weapons/melee/PF_base_n"
+	"$normalmap" "models/darky_m/rust_weapons/melee/PF_base_n"
+	
+	$envmap "env_cubemap"
+	"$normalmapalphaenvmapmask" "1"
+	"$envmaptint" "[ 0.05 0.05 0.05 ]"
+
+	"$phong" "1"
+	"$phongexponent" "20"
+	"$phongboost" "2"
+	"$phongfresnelranges" "[1 0 3]"
+	
+	$surfaceprop "wood"
+}

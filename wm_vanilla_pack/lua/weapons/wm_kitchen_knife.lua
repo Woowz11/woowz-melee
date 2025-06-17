@@ -1,0 +1,41 @@
+AddCSLuaFile()
+if WMLib then
+	local Info = {
+		Name = "#wm.weapon.kitchen_knife",
+		Icon = "icons/wm_kitchen_knife.png",
+		SelectionIcon = "icons/wm_kitchen_knife_i.png",
+		KillIcon = "icons/wm_kitchen_knife_k.png",
+		Material = MAT_METAL,
+		Sharp = true,
+		VModel = "models/wm/kitchen_knife/v.mdl",
+		VModelPos = Vector(-4,2.5,-4),
+		VModelRot = Angle(0,-5,0),
+		FOV = 70,
+		WModel = "models/wm/kitchen_knife/w.mdl",
+		Hold = "knife",
+		Rays = {{Angle(-5,-10,0),0},{Angle(0,0,0),0.025},{Angle(5,10,0),0.025}},
+		RaysDetails = 4,
+		OnlyOneRay = true,
+		WModelPos = Vector(3.4, -1, -0.5),
+		WModelRot = Angle(200, 150, 0),
+		AnimationHit = {"Attack_Quick"},
+		AnimationDraw = "Draw",
+		AnimationIdle = "Idle",
+		AttackWait = Vector(1,-50,0),
+		AttackHitWait = 0.3,
+		AttackDistance = 50,
+		Damage = Vector(10,30),
+		DamageProp = Vector(0,1),
+		PunchAngle = Angle(0,10,0),
+		IdleScale = 2,
+		InertiaScale = 0.25,
+		BlockPos = Vector(0,3,-5),
+		BlockRot = Angle(0,0,-50),
+		WBlockPos = Vector(0,0,0),
+		WBlockRot = Angle(0,-45,0),
+		BlockWait = 1,
+		BlockPower = 0.5,
+		SwingSounds = WMLib.SoundsSwing["LightSharp"]
+	}
+	WMLib.CreateMelee(SWEP,Info,"vanilla")
+end
